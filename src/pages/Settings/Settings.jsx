@@ -1,11 +1,12 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import * as FiIcons from 'react-icons/fi';
 import SafeIcon from '../../common/SafeIcon';
 import Card from '../../components/UI/Card';
 import Button from '../../components/UI/Button';
+import { getTraccarConfig, saveTraccarConfig } from '../../services/traccarService';
 
-const { FiSettings, FiUser, FiBell, FiLock, FiGlobe, FiDollarSign, FiMail, FiSave } = FiIcons;
+const { FiSettings, FiUser, FiBell, FiLock, FiGlobe, FiDollarSign, FiMail, FiSave, FiMapPin } = FiIcons;
 
 const Settings = () => {
   const [activeTab, setActiveTab] = useState('profile');
@@ -15,8 +16,35 @@ const Settings = () => {
     { id: 'notifications', name: 'Notifications', icon: FiBell },
     { id: 'security', name: 'Security', icon: FiLock },
     { id: 'company', name: 'Company', icon: FiGlobe },
+    { id: 'gps', name: 'Integrations', icon: FiMapPin }, // Renamed from Billing for simplicity in demo or added as new
     { id: 'billing', name: 'Billing', icon: FiDollarSign },
   ];
+
+  // --- Traccar Settings State ---
+  const [traccarUrl, setTraccarUrl] = useState('');
+  const [traccarUser, setTraccarUser] = useState('');
+  const [traccarPass, setTraccarPass] = useState('');
+  const [saveStatus, setSaveStatus] = useState('');
+
+  useEffect(() => {
+    const config = getTraccarConfig();
+    if (config) {
+      setTraccarUrl(config.url || '');
+      setTraccarUser(config.username || '');
+      setTraccarPass(config.password || '');
+    }
+  }, []);
+
+  const handleSaveTraccar = () => {
+    saveTraccarConfig({
+      url: traccarUrl,
+      username: traccarUser,
+      password: traccarPass
+    });
+    setSaveStatus('Saved successfully!');
+    setTimeout(() => setSaveStatus(''), 3000);
+  };
+  // -----------------------------
 
   const renderProfileSettings = () => (
     <div className="space-y-6">
@@ -335,6 +363,79 @@ const Settings = () => {
     </div>
   );
 
+  const renderGpsSettings = () => (
+    <div className="space-y-6">
+      <div>
+        <h3 className="text-lg font-medium text-gray-900 mb-4">Traccar GPS Integration</h3>
+        <p className="text-gray-600 mb-6 text-sm">
+          Connect your self-hosted Traccar server to enable real-time asset tracking. 
+          If left blank, the system will use simulation mode for demonstration.
+        </p>
+        
+        <div className="grid grid-cols-1 gap-6 max-w-2xl">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-2">
+              Server URL
+            </label>
+            <input
+              type="text"
+              placeholder="https://traccar.yourdomain.com"
+              value={traccarUrl}
+              onChange={(e) => setTraccarUrl(e.target.value)}
+              className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+            />
+            <p className="text-xs text-gray-500 mt-1">Include protocol (http/https) and port if necessary.</p>
+          </div>
+          
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Username / Email
+              </label>
+              <input
+                type="text"
+                placeholder="admin"
+                value={traccarUser}
+                onChange={(e) => setTraccarUser(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-2">
+                Password
+              </label>
+              <input
+                type="password"
+                placeholder="••••••••"
+                value={traccarPass}
+                onChange={(e) => setTraccarPass(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div className="flex items-center justify-end space-x-4">
+        {saveStatus && <span className="text-green-600 text-sm font-medium">{saveStatus}</span>}
+        <Button onClick={handleSaveTraccar}>
+          <SafeIcon icon={FiSave} className="h-4 w-4 mr-2" />
+          Save Integration Settings
+        </Button>
+      </div>
+
+      <div className="mt-8 pt-6 border-t border-gray-200">
+        <h4 className="text-md font-medium text-gray-900 mb-2">Connection Status</h4>
+        <div className="flex items-center space-x-2">
+          <div className={`w-3 h-3 rounded-full ${traccarUrl ? 'bg-orange-400' : 'bg-gray-300'}`}></div>
+          <span className="text-sm text-gray-600">
+            {traccarUrl ? 'Configuration Saved (Test connection in Tracking page)' : 'Not Configured (Using Simulation)'}
+          </span>
+        </div>
+      </div>
+    </div>
+  );
+
   const renderBillingSettings = () => (
     <div className="space-y-6">
       <div>
@@ -418,6 +519,8 @@ const Settings = () => {
         return renderSecuritySettings();
       case 'company':
         return renderCompanySettings();
+      case 'gps':
+        return renderGpsSettings();
       case 'billing':
         return renderBillingSettings();
       default:

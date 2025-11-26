@@ -6,7 +6,7 @@ import SafeIcon from '../../common/SafeIcon';
 
 const { 
   FiHome, FiUsers, FiPackage, FiShoppingCart, FiBarChart3, 
-  FiUserCheck, FiSettings, FiHeadphones, FiLogOut, FiTruck, FiX 
+  FiUserCheck, FiSettings, FiHeadphones, FiLogOut, FiTruck, FiX, FiMap
 } = FiIcons;
 
 const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
@@ -17,6 +17,7 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }) => {
     { name: 'Users', href: '/users', icon: FiUsers },
     { name: 'Products', href: '/products', icon: FiPackage },
     { name: 'Orders', href: '/orders', icon: FiShoppingCart },
+    { name: 'Tracking', href: '/tracking', icon: FiMap }, // Added Tracking
     { name: 'Analytics', href: '/analytics', icon: FiBarChart3 },
     { name: 'Team', href: '/team', icon: FiUserCheck },
     { name: 'Settings', href: '/settings', icon: FiSettings },

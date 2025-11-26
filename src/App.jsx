@@ -10,6 +10,7 @@ import Analytics from './pages/Analytics/Analytics';
 import Team from './pages/Team/Team';
 import Settings from './pages/Settings/Settings';
 import Support from './pages/Support/Support';
+import Tracking from './pages/Tracking/Tracking';
 
 function App() {
   return (
@@ -26,6 +27,7 @@ function App() {
               <Route path="/users" element={<Users />} />
               <Route path="/products" element={<Products />} />
               <Route path="/orders" element={<Orders />} />
+              <Route path="/tracking" element={<Tracking />} />
               <Route path="/analytics" element={<Analytics />} />
               <Route path="/team" element={<Team />} />
               <Route path="/settings" element={<Settings />} />
